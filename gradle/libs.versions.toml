@@ -1,6 +1,6 @@
 [versions]
 kotlin = "2.3.10"
-springBoot = "4.0.2"
+springBoot = "4.0.3"
 
 [libraries]
 spring-boot-bom = { group = "org.springframework.boot", name = "spring-boot-dependencies", version.ref = "springBoot" }
