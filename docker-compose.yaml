@@ -8,6 +8,12 @@ services:
       DB_URL: <KEY>
       DB_USERNAME: <KEY>
       DB_PASSWORD: <KEY>
+      JWT_SECRET: <KEY>
+      JWT_ISSUER: ktor-app
+      JWT_AUDIENCE: ktor-app-users
+      LM_STUDIO_URL: http://host.docker.internal:1234
+      LM_STUDIO_API_KEY: lm-studio
+      LM_STUDIO_MODEL: <KEY>
     ports:
       - "8080:8080"
     depends_on:

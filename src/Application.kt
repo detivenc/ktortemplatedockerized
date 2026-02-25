@@ -1,7 +1,9 @@
 package com.detivenc.github.ktordocker
 
+import com.detivenc.github.ktordocker.plugins.configureAI
 import com.detivenc.github.ktordocker.plugins.configureDatabase
 import com.detivenc.github.ktordocker.plugins.configureRouting
+import com.detivenc.github.ktordocker.plugins.configureSecurity
 import com.detivenc.github.ktordocker.plugins.configureSerialization
 import io.ktor.server.application.*
 
@@ -11,6 +13,8 @@ fun main(args: Array<String>) {
 
 fun Application.module() {
     configureSerialization()
+    configureSecurity()
+    configureAI()
     configureDatabase()
     configureRouting()
 }
