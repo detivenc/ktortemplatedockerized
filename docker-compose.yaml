@@ -8,6 +8,9 @@ services:
       DB_URL: <KEY>
       DB_USERNAME: <KEY>
       DB_PASSWORD: <KEY>
+      JWT_SECRET: <KEY>
+      JWT_ISSUER: ktor-app
+      JWT_AUDIENCE: ktor-app-users
     ports:
       - "8080:8080"
     depends_on:
