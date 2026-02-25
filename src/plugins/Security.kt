@@ -5,8 +5,8 @@ import com.auth0.jwt.algorithms.Algorithm
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
-import io.ktor.util.AttributeKey
-import java.util.Date
+import io.ktor.util.*
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 data class JwtConfig(
@@ -17,28 +17,30 @@ data class JwtConfig(
     val expirationMs: Long = TimeUnit.HOURS.toMillis(1)
 )
 
-val jwtConfigKey = AttributeKey<JwtConfig>("JwtConfig")
+val JwtConfigKey = AttributeKey<JwtConfig>("JwtConfig")
 
 fun Application.configureSecurity() {
-    val config = JwtConfig(
-        secret = environment.config.propertyOrNull("jwt.secret")?.getString()
+    val config = environment.config
+    
+    val jwtConfig = JwtConfig(
+        secret = config.propertyOrNull("jwt.secret")?.getString()
             ?: System.getenv("JWT_SECRET") ?: "default-secret-change-in-production",
-        issuer = environment.config.propertyOrNull("jwt.issuer")?.getString()
+        issuer = config.propertyOrNull("jwt.issuer")?.getString()
             ?: System.getenv("JWT_ISSUER") ?: "ktor-app",
-        audience = environment.config.propertyOrNull("jwt.audience")?.getString()
+        audience = config.propertyOrNull("jwt.audience")?.getString()
             ?: System.getenv("JWT_AUDIENCE") ?: "ktor-app-users",
-        realm = environment.config.propertyOrNull("jwt.realm")?.getString()
+        realm = config.propertyOrNull("jwt.realm")?.getString()
             ?: "ktor app"
     )
-    attributes.put(jwtConfigKey, config)
+    attributes.put(JwtConfigKey, jwtConfig)
 
     authentication {
         jwt("jwt-auth") {
-            realm = config.realm
+            realm = jwtConfig.realm
             verifier(
-                JWT.require(Algorithm.HMAC256(config.secret))
-                    .withAudience(config.audience)
-                    .withIssuer(config.issuer)
+                JWT.require(Algorithm.HMAC256(jwtConfig.secret))
+                    .withAudience(jwtConfig.audience)
+                    .withIssuer(jwtConfig.issuer)
                     .build()
             )
             validate { credential ->

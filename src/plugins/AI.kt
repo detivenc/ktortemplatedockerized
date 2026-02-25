@@ -8,7 +8,7 @@ import ai.koog.prompt.llm.LLMCapability
 import ai.koog.prompt.llm.LLMProvider
 import ai.koog.prompt.llm.LLModel
 import io.ktor.server.application.*
-import io.ktor.util.AttributeKey
+import io.ktor.util.*
 
 data class AIConfig(
     val model: String,
@@ -16,16 +16,18 @@ data class AIConfig(
     val executor: SingleLLMPromptExecutor
 )
 
-val aiConfigKey = AttributeKey<AIConfig>("AIConfig")
+val AIConfigKey = AttributeKey<AIConfig>("AIConfig")
 
 fun Application.configureAI() {
-    val lmStudioUrl = environment.config.propertyOrNull("ai.lmstudio.url")?.getString()
+    val config = environment.config
+
+    val lmStudioUrl = config.propertyOrNull("ai.lmstudio.url")?.getString()
         ?: System.getenv("LM_STUDIO_URL") ?: "http://localhost:1234"
-    val apiKey = environment.config.propertyOrNull("ai.lmstudio.apiKey")?.getString()
+    val apiKey = config.propertyOrNull("ai.lmstudio.apiKey")?.getString()
         ?: System.getenv("LM_STUDIO_API_KEY") ?: "lm-studio"
-    val model = environment.config.propertyOrNull("ai.lmstudio.model")?.getString()
+    val model = config.propertyOrNull("ai.lmstudio.model")?.getString()
         ?: System.getenv("LM_STUDIO_MODEL") ?: "local-model"
-    val systemPrompt = environment.config.propertyOrNull("ai.systemPrompt")?.getString()
+    val systemPrompt = config.propertyOrNull("ai.systemPrompt")?.getString()
         ?: "You are a helpful assistant."
 
     val client = OpenAILLMClient(
@@ -34,7 +36,7 @@ fun Application.configureAI() {
     )
     val executor = SingleLLMPromptExecutor(client)
 
-    attributes.put(aiConfigKey, AIConfig(model = model, systemPrompt = systemPrompt, executor = executor))
+    attributes.put(AIConfigKey, AIConfig(model = model, systemPrompt = systemPrompt, executor = executor))
 }
 
 suspend fun chatWithAI(config: AIConfig, userMessage: String): String {

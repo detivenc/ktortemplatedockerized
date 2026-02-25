@@ -4,7 +4,7 @@ ktor:
             - com.detivenc.github.ktordocker.ApplicationKt.module
     deployment:
         port: 8080
-        host: 0.0.0.0
+        host: 127.0.0.1
 
 database:
     url: jdbc:postgresql://localhost:5432/postgres

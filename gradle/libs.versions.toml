@@ -1,0 +1,15 @@
+[versions]
+kotlin = "2.1.10"
+ktor = "3.1.1"
+exposed = "0.59.0"
+postgresql = "42.7.5"
+logback = "1.5.18"
+koog = "0.6.3"
+
+[libraries]
+koog-agents = { module = "ai.koog:koog-agents", version.ref = "koog" }
+exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
+exposed-dao = { module = "org.jetbrains.exposed:exposed-dao", version.ref = "exposed" }
+exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
+postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
+logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
