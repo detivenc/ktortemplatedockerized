@@ -1,5 +1,5 @@
 # Build stage using Alpine (Amper downloads its own JRE)
-FROM alpine:3.22 AS build
+FROM alpine:3.23 AS build
 
 RUN apk add --no-cache wget curl tar unzip bash coreutils
 
