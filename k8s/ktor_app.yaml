@@ -1,0 +1,109 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ktor-app
+  labels:
+    app: ktor
+    service: ktor-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: ktor-app
+  template:
+    metadata:
+      labels:
+        app: ktor-app
+        service: ktor-app
+    spec:
+      securityContext:
+        fsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
+      volumes:
+        - name: tmp-dir
+          emptyDir: {}
+      initContainers:
+        - name: wait-for-postgres
+          image: busybox:1.37
+          command:
+            - sh
+            - -c
+            - |
+              until nc -zv ktor-db 5432; do
+                sleep 1
+              done
+          resources:
+            requests:
+              cpu: 50m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+      containers:
+        - name: ktor-app
+          image: <your-image>
+          env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: secret-kb-values
+                  key: DATABASE_PASSWORD
+            - name: DB_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: config-kub-values
+                  key: DATABASE_URL
+            - name: DB_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: config-kub-values
+                  key: POSTGRES_USER
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          volumeMounts:
+            - name: tmp-dir
+              mountPath: /tmp
+          resources:
+            requests:
+              cpu: 250m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 512Mi
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: ktor-app
+  labels:
+    app: ktor
+spec:
+  selector:
+    app: ktor-app
+  ports:
+    - port: 8080
+      targetPort: 8080
+  type: LoadBalancer
