@@ -1,0 +1,25 @@
+product: jvm/app
+
+settings:
+  ktor: enabled
+  jvm:
+    mainClass: com.detivenc.github.ktordocker.ApplicationKt
+
+dependencies:
+  - $ktor.server.core
+  - $ktor.server.netty
+  - $ktor.server.configYaml
+  - $ktor.server.contentNegotiation
+  - $ktor.serialization.kotlinx.json
+  - $ktor.server.requestValidation
+  - $ktor.server.statusPages
+  - $ktor.server.callLogging
+  - org.jetbrains.exposed:exposed-core:0.57.0
+  - org.jetbrains.exposed:exposed-dao:0.57.0
+  - org.jetbrains.exposed:exposed-jdbc:0.57.0
+  - org.postgresql:postgresql:42.7.3
+  - ch.qos.logback:logback-classic:1.5.18
+
+test-dependencies:
+  - $ktor.server.testHost
+  - $kotlin.test.junit5
