@@ -15,8 +15,15 @@ data class LoginRequest(val username: String, val password: String)
 @Serializable
 data class LoginResponse(val token: String)
 
+@Serializable
+data class ChatRequest(val message: String)
+
+@Serializable
+data class ChatResponse(val response: String)
+
 fun Application.configureRouting() {
     val jwtConfig = attributes[jwtConfigKey]
+    val aiConfig = attributes[aiConfigKey]
 
     routing {
         get("/health") {
@@ -40,6 +47,17 @@ fun Application.configureRouting() {
                 val principal = call.principal<JWTPrincipal>()
                 val username = principal?.payload?.getClaim("username")?.asString() ?: "unknown"
                 call.respond(HttpStatusCode.OK, mapOf("message" to "Hello, $username! This is a protected route."))
+            }
+            post("/ai/chat") {
+                val principal = call.principal<JWTPrincipal>()
+                val username = principal?.payload?.getClaim("username")?.asString() ?: "unknown"
+                val request = call.receive<ChatRequest>()
+                if (request.message.isBlank()) {
+                    call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Message cannot be empty"))
+                    return@post
+                }
+                val response = chatWithAI(aiConfig, request.message)
+                call.respond(HttpStatusCode.OK, ChatResponse(response))
             }
         }
     }

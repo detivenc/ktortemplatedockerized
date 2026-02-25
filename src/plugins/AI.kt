@@ -1,0 +1,52 @@
+package com.detivenc.github.ktordocker.plugins
+
+import ai.koog.agents.core.agent.AIAgent
+import ai.koog.prompt.executor.clients.openai.OpenAIClientSettings
+import ai.koog.prompt.executor.clients.openai.OpenAILLMClient
+import ai.koog.prompt.executor.llms.SingleLLMPromptExecutor
+import ai.koog.prompt.llm.LLMCapability
+import ai.koog.prompt.llm.LLMProvider
+import ai.koog.prompt.llm.LLModel
+import io.ktor.server.application.*
+import io.ktor.util.AttributeKey
+
+data class AIConfig(
+    val model: String,
+    val systemPrompt: String,
+    val executor: SingleLLMPromptExecutor
+)
+
+val aiConfigKey = AttributeKey<AIConfig>("AIConfig")
+
+fun Application.configureAI() {
+    val lmStudioUrl = environment.config.propertyOrNull("ai.lmstudio.url")?.getString()
+        ?: System.getenv("LM_STUDIO_URL") ?: "http://localhost:1234"
+    val apiKey = environment.config.propertyOrNull("ai.lmstudio.apiKey")?.getString()
+        ?: System.getenv("LM_STUDIO_API_KEY") ?: "lm-studio"
+    val model = environment.config.propertyOrNull("ai.lmstudio.model")?.getString()
+        ?: System.getenv("LM_STUDIO_MODEL") ?: "local-model"
+    val systemPrompt = environment.config.propertyOrNull("ai.systemPrompt")?.getString()
+        ?: "You are a helpful assistant."
+
+    val client = OpenAILLMClient(
+        apiKey = apiKey,
+        settings = OpenAIClientSettings(baseUrl = lmStudioUrl)
+    )
+    val executor = SingleLLMPromptExecutor(client)
+
+    attributes.put(aiConfigKey, AIConfig(model = model, systemPrompt = systemPrompt, executor = executor))
+}
+
+suspend fun chatWithAI(config: AIConfig, userMessage: String): String {
+    val llmModel = LLModel(
+        provider = LLMProvider.OpenAI,
+        id = config.model,
+        capabilities = listOf(LLMCapability.Completion, LLMCapability.Temperature)
+    )
+    val agent = AIAgent(
+        promptExecutor = config.executor,
+        llmModel = llmModel,
+        systemPrompt = config.systemPrompt
+    )
+    return agent.run(userMessage)
+}

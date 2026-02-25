@@ -16,3 +16,10 @@ jwt:
     issuer: "ktor-app"
     audience: "ktor-app-users"
     realm: "ktor app"
+
+ai:
+    lmstudio:
+        url: "http://localhost:1234"
+        apiKey: "lm-studio"
+        model: "local-model"
+    systemPrompt: "You are a helpful assistant."
