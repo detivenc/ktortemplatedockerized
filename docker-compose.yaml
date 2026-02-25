@@ -1,26 +1,24 @@
 services:
-  kotlin_app:
+  ktor_app:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: kotlin_app
+    container_name: ktor_app
     environment:
       DB_URL: <KEY>
       DB_USERNAME: <KEY>
       DB_PASSWORD: <KEY>
-      ISSUER_URL: <KEY>
-      CHATGPT-KEY: <KEY>
     ports:
       - "8080:8080"
     depends_on:
-      kotlin_db:
+      ktor_db:
         condition: service_healthy
     networks:
-      - kotlin-network
+      - ktor-network
 
-  kotlin_db:
-    container_name: kotlin_db
-    image: postgres:18-alpine
+  ktor_db:
+    container_name: ktor_db
+    image: postgres:17-alpine
     ports:
       - "5432:5432"
     environment:
@@ -36,11 +34,11 @@ services:
       retries: 5
       start_period: 30s
     networks:
-      - kotlin-network
+      - ktor-network
 
 volumes:
   data:
 
 networks:
-  kotlin-network:
+  ktor-network:
     driver: bridge

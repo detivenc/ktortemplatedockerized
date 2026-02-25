@@ -1,13 +1,13 @@
 <p align="center">
   <a href="https://skillicons.dev">
-    <img src="https://skillicons.dev/icons?i=git,githubactions,kubernetes,docker,gradle,postgres,spring,kotlin&perline=8" />
+    <img src="https://skillicons.dev/icons?i=git,githubactions,kubernetes,docker,kotlin,postgres&perline=6" />
   </a>
 </p>
 
-<h1 align="center">Spring Boot, Docker, and Kubernetes Template</h1>
+<h1 align="center">Ktor, Docker, and Kubernetes Template</h1>
 
 <p align="center">
-  A ready-to-use, containerized Spring Boot application template for rapid development and deployment.
+  A ready-to-use, containerized Ktor application template for rapid development and deployment.
   <br/>
   <br/>
   <a href="https://github.com/DeTiveNC/SpringTemplateDockerized/issues">Report Bug</a>
@@ -25,25 +25,49 @@
 
 ## About The Project
 
-This project provides a solid foundation for building and deploying Spring Boot applications. It comes pre-configured with Docker for containerization, PostgreSQL as the database, and Kubernetes for orchestration. It's designed to help you get your web service up and running quickly, with a focus on modern development practices.
+This project provides a solid foundation for building and deploying **Ktor** applications. It is pre-configured with Docker for containerization, PostgreSQL as the database, and Kubernetes for orchestration. The build system uses **Amper** — JetBrains' simpler build tool — instead of Gradle.
 
 ### Features
 
-*   **Spring Boot:** The latest version for building robust Java and Kotlin applications.
+*   **Ktor:** Lightweight, async Kotlin-first web framework by JetBrains.
+*   **Amper:** Simple YAML-based build tool, replacing Gradle.
+*   **Exposed:** Kotlin SQL library for database access (replacing JPA).
 *   **Docker:** Containerize your application for consistent environments and easy scaling.
 *   **PostgreSQL:** A powerful, open-source object-relational database system.
-*   **Kubernetes:** Pre-configured for deploying your application to a K8s cluster.
-*   **JWT Authentication:** Secure your endpoints with JSON Web Tokens.
-*   **Gradle:** A powerful build automation tool.
+*   **Kubernetes:** Pre-configured manifests with resource limits, health probes and security contexts.
 
 ### Built With
 
-*   [Spring Boot](https://spring.io/projects/spring-boot)
+*   [Ktor](https://ktor.io/)
 *   [Kotlin](https://kotlinlang.org/)
-*   [Gradle](https://gradle.org/)
+*   [Amper](https://github.com/JetBrains/amper)
+*   [Exposed](https://github.com/JetBrains/Exposed)
 *   [Docker](https://www.docker.com/)
 *   [PostgreSQL](https://www.postgresql.org/)
 *   [Kubernetes](https://kubernetes.io/)
+
+## Project Structure
+
+```
+├── amper              # Amper wrapper script (Unix)
+├── amper.bat          # Amper wrapper script (Windows)
+├── module.yaml        # Amper build config (replaces build.gradle.kts)
+├── src/
+│   ├── Application.kt          # Ktor entry point
+│   └── plugins/
+│       ├── Routing.kt          # HTTP routes (/health, /)
+│       ├── Databases.kt        # Database connection (Exposed + PostgreSQL)
+│       └── Serialization.kt    # JSON content negotiation
+├── resources/
+│   ├── application.yaml        # Ktor server config
+│   └── logback.xml             # Logging config
+├── Dockerfile                  # Multi-stage build using Amper
+├── docker-compose.yaml         # Local dev with PostgreSQL
+└── k8s/
+    ├── ktor_app.yaml           # Deployment + Service for the app
+    ├── postgresql.yaml         # Deployment + Service + PVC for PostgreSQL
+    └── config-system.yaml      # ConfigMap + Secret
+```
 
 ## Getting Started
 
@@ -52,7 +76,7 @@ Follow these steps to get a local copy of the project up and running.
 ### Prerequisites
 
 *   Docker
-*   JDK 17 or later
+*   JDK 21 or later (only needed for local development without Docker)
 
 ### Installation
 
@@ -61,112 +85,64 @@ Follow these steps to get a local copy of the project up and running.
     git clone https://github.com/DeTiveNC/SpringTemplateDockerized.git
     ```
 2.  **Build the project**
-    Use the Gradle wrapper to build the project and create the JAR file.
+    Use the Amper wrapper to build the project.
     ```sh
-    ./gradlew build
+    ./amper build
     ```
-3.  **Run with Docker Compose**
-    This will start the application and the PostgreSQL database.
+3.  **Run locally**
+    ```sh
+    ./amper run
+    ```
+4.  **Run with Docker Compose**
+    This will start the Ktor application and the PostgreSQL database.
     ```sh
     docker-compose up
     ```
 
-## Usage
-
-This application provides both a web interface using Vaadin and REST API endpoints for authentication and user management.
-
-### Web Interface (Vaadin)
-
-Once the application is running, you can access the Vaadin web interface:
-
-1. **Login Page**: Navigate to `http://localhost:8080/login`
-   - Enter your email address and password
-   - Click **"Login"** to authenticate with existing credentials
-   - Click **"Register"** to create a new user account
-   - Upon successful authentication, a JWT token will be displayed in a notification
-
-The web interface provides a user-friendly way to:
-- Register new user accounts
-- Login with existing credentials
-- View JWT tokens for API access
-
-### REST API Endpoints
-
-The application also exposes the following API endpoints for programmatic access:
-
-*   **Register a new user:**
-    `POST /api/auth/register`
-    <br>
-    Request body:
-    ```json
-    {
-      "email": "user@example.com",
-      "password": "password"
-    }
-    ```
-    Response:
-    ```json
-    {
-      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-    }
-    ```
-
-*   **Login:**
-    `POST /api/auth/login`
-    <br>
-    Request body:
-    ```json
-    {
-      "email": "user@example.com",
-      "password": "password"
-    }
-    ```
-    Response:
-    ```json
-    {
-      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-    }
-    ```
+## REST API Endpoints
 
 *   **Health Check:**
     `GET /health`
+    ```json
+    {"status": "UP"}
+    ```
 
-### Getting Started with Authentication
+*   **Root:**
+    `GET /`
+    ```
+    Ktor application is running!
+    ```
 
-1. **Start the application** using Docker Compose:
-   ```sh
-   docker-compose up
-   ```
+## Environment Variables
 
-2. **Access the web interface** at `http://localhost:8080/login`
-
-3. **Register a new user** by entering an email and password, then clicking "Register"
-
-4. **Login** with your credentials to receive a JWT token
-
-5. **Use the JWT token** in the `Authorization: Bearer <token>` header for protected API endpoints
-
-You can use the web interface for easy interaction, or use tools like `curl` or Postman to interact directly with the REST API.
+| Variable       | Description                        | Default                                   |
+|----------------|------------------------------------|-------------------------------------------|
+| `DB_URL`       | JDBC URL for the PostgreSQL database | `jdbc:postgresql://localhost:5432/postgres` |
+| `DB_USERNAME`  | Database username                  | `postgres`                                |
+| `DB_PASSWORD`  | Database password                  | `postgres`                                |
 
 ## Deployment
-
-To deploy the application, you can build and push the Docker image to a container registry.
 
 1.  **Build the Docker image**
     ```sh
     docker compose build
     ```
 2.  **Push the Docker image**
-    Make sure to tag the image with your registry's username and a tag.
     ```sh
-    docker push <your-username>/java-app:<tag-name>
+    docker push <your-username>/ktor-app:<tag-name>
     ```
 
 ## Kubernetes
 
-This project includes a `k8s` directory with Kubernetes manifests to deploy the application. You can use a tool like [Minikube](https://minikube.sigs.k8s.io/docs/) to run a local Kubernetes cluster.
+The `k8s/` directory contains Kubernetes manifests to deploy the application.
 
-The manifests were generated using [Kompose](https://kompose.io/), which translates Docker Compose files into Kubernetes resources.
+1.  Fill in the placeholder values in `k8s/config-system.yaml`
+2.  Apply the manifests:
+    ```sh
+    kubectl apply -f k8s/config-system.yaml
+    kubectl apply -f k8s/postgresql.yaml
+    kubectl apply -f k8s/ktor_app.yaml
+    ```
 
 ## Contributing
 
@@ -184,4 +160,4 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## Authors
 
-*   **Nicolas Cao** - *Comp Eng Student* - [Nicolas Cao](https://github.com/detivenc) 
+*   **Nicolas Cao** - *Comp Eng Student* - [Nicolas Cao](https://github.com/detivenc)

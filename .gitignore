@@ -194,7 +194,6 @@ target
 dependency-reduced-pom.xml
 *.sublime-*
 /scratch
-.gradle
 README.html
 *.iml
 .idea
@@ -206,5 +205,10 @@ docker-compose-test.yaml
 ## FrontEnd vaadim
 frontend/
 
-# Gradle build cache
+### Amper ###
+# Amper build output
+build/
 build-cache/
+
+# Amper local cache (downloaded distributions and JREs)
+.cache/
