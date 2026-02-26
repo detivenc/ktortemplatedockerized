@@ -3,7 +3,7 @@ kotlin = "2.1.10"
 ktor = "3.1.1"
 exposed = "0.59.0"
 postgresql = "42.7.5"
-logback = "1.5.18"
+logback = "1.5.32"
 koog = "0.6.3"
 
 [libraries]
