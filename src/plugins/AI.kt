@@ -24,11 +24,6 @@ fun Application.configureAI() {
     val lmStudioUrlRaw = config.propertyOrNull("ai.lmstudio.url")?.getString()
         ?: System.getenv("LM_STUDIO_URL") ?: "http://localhost:1234"
 
-    // LM Studio's OpenAI-compatible API typically lives under /v1
-    val lmStudioBaseUrl = lmStudioUrlRaw.trimEnd('/').let { base ->
-        if (base.endsWith("/v1")) base else base
-    }
-
     val apiKey = config.propertyOrNull("ai.lmstudio.apiKey")?.getString()
         ?: System.getenv("LM_STUDIO_API_KEY") ?: "lm-studio"
 
@@ -40,7 +35,7 @@ fun Application.configureAI() {
 
     val client = OpenAILLMClient(
         apiKey = apiKey,
-        settings = OpenAIClientSettings(baseUrl = lmStudioBaseUrl)
+        settings = OpenAIClientSettings(baseUrl = lmStudioUrlRaw)
     )
     val executor = SingleLLMPromptExecutor(client)
 

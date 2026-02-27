@@ -31,6 +31,36 @@ data class ChatResponse(val response: String)
 @Serializable
 data class RegisterRequest(val username: String, val password: String)
 
+private suspend fun ApplicationCall.respondError(status: HttpStatusCode, message: String) {
+    respond(status, mapOf("error" to message))
+}
+
+private fun LoginRequest.hasBlankCredentials(): Boolean =
+    username.isBlank() || password.isBlank()
+
+private fun RegisterRequest.hasBlankCredentials(): Boolean =
+    username.isBlank() || password.isBlank()
+
+private fun fetchPasswordHashByUsername(user: String): String? = transaction {
+    Users.selectAll()
+        .where { username eq user }
+        .limit(1)
+        .firstOrNull()
+        ?.get(passwordHash)
+}
+
+private fun tryCreateUser(user: String, hash: String): Boolean = try {
+    transaction {
+        Users.insert {
+            it[username] = user
+            it[passwordHash] = hash
+        }
+    }
+    true
+} catch (_: Exception) {
+    false
+}
+
 fun Application.configureRouting() {
     val jwtConfig = attributes[JwtConfigKey]
     val aiConfig = attributes[AIConfigKey]
@@ -47,21 +77,16 @@ fun Application.configureRouting() {
         route("/auth") {
             post("/login") {
                 val request = call.receive<LoginRequest>()
-                // Demo: accept any non-empty username/password combination
-                if (request.username.isBlank() || request.password.isBlank()) {
-                    call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Username and password are required"))
+
+                if (request.hasBlankCredentials()) {
+                    call.respondError(HttpStatusCode.BadRequest, "Username and password are required")
                     return@post
                 }
-                val userHash: String? = transaction {
-                    Users.selectAll()
-                        .where { username eq request.username }
-                        .limit(1)
-                        .firstOrNull()
-                        ?.get(passwordHash)
-                }
 
-                if (userHash == null || !BCrypt.checkpw(request.password, userHash)) {
-                    call.respond(HttpStatusCode.Unauthorized, mapOf("error" to "Invalid credentials"))
+                val userHash = fetchPasswordHashByUsername(request.username)
+                val ok = userHash != null && BCrypt.checkpw(request.password, userHash)
+                if (!ok) {
+                    call.respondError(HttpStatusCode.Unauthorized, "Invalid credentials")
                     return@post
                 }
 
@@ -72,27 +97,15 @@ fun Application.configureRouting() {
             post("/register") {
                 val request = call.receive<RegisterRequest>()
 
-                if (request.username.isBlank() || request.password.isBlank()) {
-                    call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Username and password are required"))
+                if (request.hasBlankCredentials()) {
+                    call.respondError(HttpStatusCode.BadRequest, "Username and password are required")
                     return@post
                 }
 
                 val hash = BCrypt.hashpw(request.password, BCrypt.gensalt())
-
-                val created = try {
-                    transaction {
-                        Users.insert {
-                            it[username] = request.username
-                            it[passwordHash] = hash
-                        }
-                        true
-                    }
-                } catch (e: Exception) {
-                    false
-                }
-
+                val created = tryCreateUser(request.username, hash)
                 if (!created) {
-                    call.respond(HttpStatusCode.Conflict, mapOf("error" to "Username already exists"))
+                    call.respondError(HttpStatusCode.Conflict, "Username already exists")
                     return@post
                 }
 
@@ -102,17 +115,27 @@ fun Application.configureRouting() {
 
         authenticate("jwt-auth") {
             get("/secure") {
-                val principal = call.principal<JWTPrincipal>()
-                val username = principal?.payload?.getClaim("username")?.asString() ?: "unknown"
-                call.respond(HttpStatusCode.OK, mapOf("message" to "Hello, $username! This is a protected route."))
+                val username =
+                    call.principal<JWTPrincipal>()
+                        ?.payload
+                        ?.getClaim("username")
+                        ?.asString()
+                        ?: "unknown"
+
+                call.respond(
+                    HttpStatusCode.OK,
+                    mapOf("message" to "Hello, $username! This is a protected route.")
+                )
             }
 
             post("/ai/chat") {
                 val request = call.receive<ChatRequest>()
+
                 if (request.message.isBlank()) {
-                    call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Message cannot be empty"))
+                    call.respondError(HttpStatusCode.BadRequest, "Message cannot be empty")
                     return@post
                 }
+
                 val response = chatWithAI(aiConfig, request.message)
                 call.respond(HttpStatusCode.OK, ChatResponse(response))
             }
