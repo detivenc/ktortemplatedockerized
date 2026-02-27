@@ -1,5 +1,5 @@
 product:
-    type: jvm/app
+  type: jvm/app
 
 dependencies:
   - $libs.ktor.server.auth
@@ -9,7 +9,9 @@ dependencies:
   - $libs.ktor.server.content.negotiation
   - $libs.exposed.core
   - $libs.exposed.jdbc
-  - $libs.postgresql
+  - $libs.h2
+  - $libs.jbcrypt
+  #- $libs.postgresql
   - $libs.koog.ktor
   - $libs.ktor.server.netty
   - $libs.logback.classic
@@ -20,5 +22,8 @@ test-dependencies:
   - $libs.kotlin.test.junit
 
 settings:
+  kotlin:
+    serialization:
+      enabled: true
   jvm:
     mainClass: io.ktor.server.netty.EngineMain

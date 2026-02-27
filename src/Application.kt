@@ -1,14 +1,13 @@
-package com.detivenc.github.ktordocker
-
-import com.detivenc.github.ktordocker.plugins.configureAI
-import com.detivenc.github.ktordocker.plugins.configureDatabase
-import com.detivenc.github.ktordocker.plugins.configureRouting
-import com.detivenc.github.ktordocker.plugins.configureSecurity
-import com.detivenc.github.ktordocker.plugins.configureSerialization
 import io.ktor.server.application.*
+import io.ktor.server.netty.EngineMain
+import plugins.configureAI
+import plugins.configureDatabase
+import plugins.configureRouting
+import plugins.configureSecurity
+import plugins.configureSerialization
 
 fun main(args: Array<String>) {
-    io.ktor.server.netty.EngineMain.main(args)
+    EngineMain.main(args)
 }
 
 fun Application.module() {
@@ -18,3 +17,4 @@ fun Application.module() {
     configureDatabase()
     configureRouting()
 }
+

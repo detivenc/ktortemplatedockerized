@@ -1,7 +1,10 @@
-package com.detivenc.github.ktordocker.plugins
+package plugins
 
+import Users
 import io.ktor.server.application.*
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
 
 fun Application.configureDatabase() {
@@ -14,11 +17,13 @@ fun Application.configureDatabase() {
         ?: System.getenv("DB_USERNAME") ?: "postgres"
     val dbPassword = config.propertyOrNull("database.password")?.getString()
         ?: System.getenv("DB_PASSWORD") ?: "postgres"
+    val dbDriver = config.propertyOrNull("database.driver")?.getString()
+        ?: System.getenv("DB_DRIVER") ?: "org.postgresql.Driver"
 
     try {
         Database.connect(
             url = dbUrl,
-            driver = "org.postgresql.Driver",
+            driver = dbDriver,
             user = dbUser,
             password = dbPassword
         )
@@ -26,5 +31,9 @@ fun Application.configureDatabase() {
     } catch (e: Exception) {
         logger.error("Failed to connect to database: ${e.message}")
         // Consider if application should fail to start if DB connection is critical
+    }
+
+    transaction {
+        SchemaUtils.create(Users)
     }
 }

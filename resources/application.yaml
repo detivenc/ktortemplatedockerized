@@ -1,20 +1,24 @@
 ktor:
-    application:
-        modules:
-            - com.detivenc.github.ktordocker.ApplicationKt.module
-    deployment:
-        port: 8080
+  application:
+    modules:
+      - ApplicationKt.module
+  deployment:
+    port: 8080
+
 jwt:
   domain: "https://jwt-provider-domain/"
   audience: "jwt-audience"
   realm: "ktor sample app"
-postgres:
-  url: "jdbc:postgresql://localhost/default"
-  user: username
-  password: password
+
+database:
+  url: "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;MODE=PostgreSQL"
+  driver: "org.h2.Driver"
+  user: "sa"
+  password: ""
+
 ai:
     lmstudio:
-        url: "http://localhost:1234"
+        url: "http://127.0.0.1:1234"
         apiKey: "lm-studio"
-        model: "local-model"
+        model: "openai/gpt-oss-20b"
     systemPrompt: "You are a helpful assistant."

@@ -1,4 +1,4 @@
-package com.detivenc.github.ktordocker.plugins
+package plugins
 
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*

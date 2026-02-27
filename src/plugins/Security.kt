@@ -1,4 +1,4 @@
-package com.detivenc.github.ktordocker.plugins
+package plugins
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm

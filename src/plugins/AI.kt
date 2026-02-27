@@ -1,4 +1,4 @@
-package com.detivenc.github.ktordocker.plugins
+package plugins
 
 import ai.koog.agents.core.agent.AIAgent
 import ai.koog.prompt.executor.clients.openai.OpenAIClientSettings
@@ -21,22 +21,30 @@ val AIConfigKey = AttributeKey<AIConfig>("AIConfig")
 fun Application.configureAI() {
     val config = environment.config
 
-    val lmStudioUrl = config.propertyOrNull("ai.lmstudio.url")?.getString()
+    val lmStudioUrlRaw = config.propertyOrNull("ai.lmstudio.url")?.getString()
         ?: System.getenv("LM_STUDIO_URL") ?: "http://localhost:1234"
+
+    // LM Studio's OpenAI-compatible API typically lives under /v1
+    val lmStudioBaseUrl = lmStudioUrlRaw.trimEnd('/').let { base ->
+        if (base.endsWith("/v1")) base else base
+    }
+
     val apiKey = config.propertyOrNull("ai.lmstudio.apiKey")?.getString()
         ?: System.getenv("LM_STUDIO_API_KEY") ?: "lm-studio"
-    val model = config.propertyOrNull("ai.lmstudio.model")?.getString()
+
+    val modelRaw = config.propertyOrNull("ai.lmstudio.model")?.getString()
         ?: System.getenv("LM_STUDIO_MODEL") ?: "local-model"
+
     val systemPrompt = config.propertyOrNull("ai.systemPrompt")?.getString()
         ?: "You are a helpful assistant."
 
     val client = OpenAILLMClient(
         apiKey = apiKey,
-        settings = OpenAIClientSettings(baseUrl = lmStudioUrl)
+        settings = OpenAIClientSettings(baseUrl = lmStudioBaseUrl)
     )
     val executor = SingleLLMPromptExecutor(client)
 
-    attributes.put(AIConfigKey, AIConfig(model = model, systemPrompt = systemPrompt, executor = executor))
+    attributes.put(AIConfigKey, AIConfig(model = modelRaw, systemPrompt = systemPrompt, executor = executor))
 }
 
 suspend fun chatWithAI(config: AIConfig, userMessage: String): String {
@@ -44,8 +52,8 @@ suspend fun chatWithAI(config: AIConfig, userMessage: String): String {
         provider = LLMProvider.OpenAI,
         id = config.model,
         capabilities = listOf(LLMCapability.Completion, LLMCapability.Temperature),
-        contextLength = 1000000000L,
-        maxOutputTokens = 10000000L
+        contextLength = 1_000_000_000L,
+        maxOutputTokens = 10_000_000L
     )
     val agent = AIAgent(
         promptExecutor = config.executor,
