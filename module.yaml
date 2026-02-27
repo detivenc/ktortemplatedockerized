@@ -1,29 +1,24 @@
-product: jvm/app
-
-settings:
-  ktor: enabled
-  jvm:
-    mainClass: com.detivenc.github.ktordocker.ApplicationKt
+product:
+    type: jvm/app
 
 dependencies:
-  - $ktor.server.core
-  - $ktor.server.netty
-  - $ktor.server.configYaml
-  - $ktor.server.contentNegotiation
-  - $ktor.serialization.kotlinx.json
-  - $ktor.server.requestValidation
-  - $ktor.server.statusPages
-  - $ktor.server.callLogging
-  - $ktor.server.auth
-  - $ktor.server.auth.jwt
-  - $ktor.client.cio
-  - $libs.koog.agents
+  - $libs.ktor.server.auth
+  - $libs.ktor.server.core
+  - $libs.ktor.server.auth.jwt
+  - $libs.ktor.serialization.kotlinx.json
+  - $libs.ktor.server.content.negotiation
   - $libs.exposed.core
-  - $libs.exposed.dao
   - $libs.exposed.jdbc
   - $libs.postgresql
-  - $libs.logback
+  - $libs.koog.ktor
+  - $libs.ktor.server.netty
+  - $libs.logback.classic
+  - $libs.ktor.server.config.yaml
 
 test-dependencies:
-  - $ktor.server.testHost
-  - $kotlin.test.junit5
+  - $libs.ktor.server.test.host
+  - $libs.kotlin.test.junit
+
+settings:
+  jvm:
+    mainClass: io.ktor.server.netty.EngineMain

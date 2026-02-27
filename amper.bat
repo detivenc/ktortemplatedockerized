@@ -17,9 +17,9 @@
 setlocal
 
 @rem The version of the Amper distribution to provision and use
-set amper_version=0.10.0-dev-3680
+set amper_version=0.9.0
 @rem Establish chain of trust from here by specifying exact checksum of Amper distribution to be run
-set amper_sha256=61d085f4203a04a8e769adf777c15421fe32e1d6633919a79ce70cb3f49e249a
+set amper_sha256=77227bb5be7091cae69ffbfff2594b9989c7ecab274f8c2a35ba8b9b6a8ef3bb
 
 if not defined AMPER_DOWNLOAD_ROOT set AMPER_DOWNLOAD_ROOT=https://packages.jetbrains.team/maven/p/amper/amper
 if not defined AMPER_JRE_DOWNLOAD_ROOT set AMPER_JRE_DOWNLOAD_ROOT=https:/
@@ -134,6 +134,20 @@ set amper_target_dir=%AMPER_BOOTSTRAP_CACHE_DIR%\amper-cli-%amper_version%
 call :download_and_extract "Amper distribution v%amper_version%" "%amper_url%" "%amper_target_dir%" "%amper_sha256%" "256" "true"
 if errorlevel 1 goto fail
 
+REM !! DO NOT REMOVE !!
+REM There is a command at the end of this line:                                                                                                                                                                                                                                                                                                                            exit /b %ERRORLEVEL%
+REM
+REM The above comment is strategically placed to compensate for a bug in the update command in Amper 0.5.0.
+REM During the update, the wrapper script is overwritten in-place while running. The problem is that cmd.exe doesn't
+REM buffer the original script as a whole, and instead reloads it after every command, and tries to resume at the same
+REM byte offset as before.
+REM In the 0.5.0 script, the java command running Amper is followed by the command 'exit /b %ERRORLEVEL%', which is
+REM exactly at the byte offset 6826. So, when the java command finishes, cmd.exe wants to run this exit command, but
+REM it first reloads the file and gets the new content (this one) before trying to run whatever is at offset 6826.
+REM We must place an exit command right at that offset to allow 0.5.0 to complete properly.
+REM Since there are version/checksum placeholders at the top of this template wrapper file, we need to dynamically
+REM adjust the position of the exit command, hence the padding placeholder.
+
 REM ********** Provision JRE for Amper **********
 
 if defined AMPER_JAVA_HOME (
@@ -153,14 +167,16 @@ if defined AMPER_JAVA_HOME (
 )
 
 @rem Auto-updated from syncVersions.main.kts, do not modify directly here
-set zulu_version=25.32.21
-set java_version=25.0.2
+set zulu_version=25.28.85
+set java_version=25.0.0
 if "%PROCESSOR_ARCHITECTURE%"=="ARM64" (
+    set pkg_type=jdk
     set jre_arch=aarch64
-    set jre_sha256=1106eec3bd166a117ccaf20f15bbec6537e27307be328b8a9e93a053c857fe7c
+    set jre_sha256=f5f6d8a913695649e8e2607fe0dc79c81953b2583013ac1fb977c63cb4935bfb
 ) else if "%PROCESSOR_ARCHITECTURE%"=="AMD64" (
+    set pkg_type=jre
     set jre_arch=x64
-    set jre_sha256=a4b7e3c3929d513cdc774583d375ce07fcb8671833258f468fd2fa0d8227ba48
+    set jre_sha256=d3c5db7864e6412ce3971c0b065def64942d7b0f3d02581f7f0472cac21fbba9
 ) else (
     echo Unknown Windows architecture %PROCESSOR_ARCHITECTURE% >&2
     goto fail
@@ -168,9 +184,9 @@ if "%PROCESSOR_ARCHITECTURE%"=="ARM64" (
 
 @rem URL for the JRE (see https://api.azul.com/metadata/v1/zulu/packages?release_status=ga&include_fields=java_package_features,os,arch,hw_bitness,abi,java_package_type,sha256_hash,size,archive_type,lib_c_type&java_version=25&os=macos,linux,win)
 @rem https://cdn.azul.com/zulu/bin/zulu25.28.85-ca-jre25.0.0-win_x64.zip
-@rem https://cdn.azul.com/zulu/bin/zulu25.28.85-ca-jre25.0.0-win_aarch64.zip
-set jre_url=%AMPER_JRE_DOWNLOAD_ROOT%/cdn.azul.com/zulu/bin/zulu%zulu_version%-ca-jre%java_version%-win_%jre_arch%.zip
-set jre_target_dir=%AMPER_BOOTSTRAP_CACHE_DIR%\zulu%zulu_version%-ca-jre%java_version%-win_%jre_arch%
+@rem https://cdn.azul.com/zulu/bin/zulu25.28.85-ca-jdk25.0.0-win_aarch64.zip
+set jre_url=%AMPER_JRE_DOWNLOAD_ROOT%/cdn.azul.com/zulu/bin/zulu%zulu_version%-ca-%pkg_type%%java_version%-win_%jre_arch%.zip
+set jre_target_dir=%AMPER_BOOTSTRAP_CACHE_DIR%\zulu%zulu_version%-ca-%pkg_type%%java_version%-win_%jre_arch%
 call :download_and_extract "Amper runtime v%zulu_version%" "%jre_url%" "%jre_target_dir%" "%jre_sha256%" "256" "false"
 if errorlevel 1 goto fail
 

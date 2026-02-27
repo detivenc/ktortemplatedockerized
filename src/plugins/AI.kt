@@ -43,7 +43,9 @@ suspend fun chatWithAI(config: AIConfig, userMessage: String): String {
     val llmModel = LLModel(
         provider = LLMProvider.OpenAI,
         id = config.model,
-        capabilities = listOf(LLMCapability.Completion, LLMCapability.Temperature)
+        capabilities = listOf(LLMCapability.Completion, LLMCapability.Temperature),
+        contextLength = 1000000000L,
+        maxOutputTokens = 10000000L
     )
     val agent = AIAgent(
         promptExecutor = config.executor,
