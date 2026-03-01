@@ -7,140 +7,140 @@
 <h1 align="center">Ktor Template Dockerized</h1>
 
 <p align="center">
-  <strong>A professional, ready-to-use Ktor application template with Docker, Kubernetes, and AI integration.</strong>
+  <strong>Plantilla profesional de Ktor lista para producción con Docker, Kubernetes e integración de IA.</strong>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/github/license/DeTiveNC/SpringTemplateDockerized" alt="License" />
-  <img src="https://img.shields.io/github/contributors/DeTiveNC/SpringTemplateDockerized?color=dark-green" alt="Contributors" />
-  <img src="https://img.shields.io/github/stars/DeTiveNC/SpringTemplateDockerized?style=social" alt="Stars" />
-  <img src="https://img.shields.io/github/issues/DeTiveNC/SpringTemplateDockerized" alt="Issues" />
+  <img src="https://img.shields.io/github/license/DeTiveNC/ktortemplatedockerized" alt="Licencia" />
+  <img src="https://img.shields.io/github/contributors/DeTiveNC/ktortemplatedockerized?color=dark-green" alt="Colaboradores" />
+  <img src="https://img.shields.io/github/stars/DeTiveNC/ktortemplatedockerized?style=social" alt="Estrellas" />
+  <img src="https://img.shields.io/github/issues/DeTiveNC/ktortemplatedockerized" alt="Issues" />
 </p>
 
 ---
 
-## 🚀 Overview
+## 🚀 Descripción General
 
-This template provides a robust foundation for building modern, scalable backends using **Ktor**. It is designed with "production-ready" in mind, featuring containerization, database integration, JWT security, and experimental AI agent support via **Koog**.
+Esta plantilla proporciona una base sólida y escalable para construir backends modernos utilizando **Ktor**. Está diseñada con un enfoque "listo para producción", incluyendo contenerización, integración con bases de datos, seguridad JWT y soporte experimental para agentes de IA mediante **Koog**.
 
-The project uses **Amper** — JetBrains' simplified build tool — for a cleaner configuration experience compared to traditional Gradle setups.
+El proyecto utiliza **Amper**, la herramienta de construcción simplificada de JetBrains, para una experiencia de configuración más limpia en comparación con los setups tradicionales de Gradle.
 
-### ✨ Key Features
+### ✨ Características Principales
 
-- ⚡ **Ktor 3.1.1**: High-performance, asynchronous web framework for Kotlin.
-- 📦 **Docker & Compose**: Seamless containerization and local development setup.
-- 🎡 **Kubernetes**: Production-grade manifests for deployment, including resource limits and health probes.
-- 🗄️ **Exposed 0.59.0**: Type-safe SQL framework for Kotlin.
-- 🔐 **JWT Authentication**: Secure API endpoints out-of-the-box.
-- 🤖 **AI Integration**: Built-in support for AI agents using the Koog library.
-- 🛠️ **Amper Build System**: YAML-based configuration for dependencies and builds.
+- ⚡ **Ktor 3.4.0**: Framework web asíncrono de alto rendimiento para Kotlin.
+- 📦 **Docker & Compose**: Contenerización fluida y entorno de desarrollo local listo.
+- 🎡 **Kubernetes**: Manifiestos listos para producción, incluyendo límites de recursos y sondas de salud (health probes).
+- 🗄️ **Exposed 1.1.1**: Framework SQL de tipado seguro para Kotlin.
+- 🔐 **Seguridad JWT**: Endpoints protegidos mediante autenticación JWT.
+- 🤖 **Integración de IA**: Soporte integrado para agentes de IA utilizando la librería Koog.
+- 🛠️ **Sistema de Construcción Amper**: Configuración basada en YAML para dependencias y builds.
 
 ---
 
-## 📁 Project Structure
+## 📁 Estructura del Proyecto
 
 ```text
-├── .github/workflows   # CI/CD pipelines
-├── gradle/             # Version catalogs (libs.versions.toml)
-├── k8s/                # Kubernetes manifests
+├── .github/workflows   # Pipelines de CI/CD
+├── gradle/             # Catálogo de versiones (libs.versions.toml)
+├── k8s/                # Manifiestos de Kubernetes
 ├── src/
-│   ├── Application.kt  # App entry point
-│   └── plugins/        # Ktor feature configurations
-│       ├── AI.kt       # AI Agent setup
-│       ├── Databases.kt# Exposed & PostgreSQL setup
-│       ├── Routing.kt  # API endpoints
-│       ├── Security.kt # JWT & Auth
+│   ├── Application.kt  # Punto de entrada de la aplicación
+│   └── plugins/        # Configuraciones de características de Ktor
+│       ├── AI.kt       # Configuración de Agentes de IA
+│       ├── Databases.kt# Configuración de Exposed & PostgreSQL
+│       ├── Routing.kt  # Definición de endpoints de la API
+│       ├── Security.kt # Configuración de JWT & Autenticación
 │       └── ...
-├── module.yaml         # Amper build configuration
-├── Dockerfile          # Multi-stage optimized build
-└── docker-compose.yaml # Local development stack
+├── module.yaml         # Configuración de construcción de Amper
+├── Dockerfile          # Build optimizado multi-etapa
+└── docker-compose.yaml # Stack de desarrollo local
 ```
 
 ---
 
-## 🛠️ Getting Started
+## 🛠️ Comenzando
 
-### Prerequisites
+### Requisitos Previos
 
 - **JDK 21+**
 - **Docker & Docker Compose**
-- **Amper** (Included via wrapper `./amper`)
+- **Amper** (Incluido mediante el wrapper `./amper`)
 
-### Installation & Run
+### Instalación y Ejecución
 
-1. **Clone the repository:**
+1. **Clonar el repositorio:**
    ```bash
-   git clone https://github.com/DeTiveNC/SpringTemplateDockerized.git
-   cd SpringTemplateDockerized
+   git clone https://github.com/DeTiveNC/ktortemplatedockerized.git
+   cd ktortemplatedockerized
    ```
 
-2. **Run locally (Development):**
+2. **Ejecutar localmente (Desarrollo):**
    ```bash
    ./amper run
    ```
 
-3. **Run with Docker Compose:**
+3. **Ejecutar con Docker Compose:**
    ```bash
    docker-compose up --build
    ```
 
 ---
 
-## 🔒 Security & Configuration
+## 🔒 Seguridad y Configuración
 
-The application is configured via `resources/application.yaml` and environment variables.
+La aplicación se configura a través de `resources/application.yaml` y variables de entorno.
 
-| Variable      | Description                      | Default                                     |
+| Variable      | Descripción                      | Valor por Defecto                           |
 |---------------|----------------------------------|---------------------------------------------|
-| `DB_URL`      | JDBC connection URL              | `jdbc:postgresql://localhost:5432/postgres` |
-| `DB_USERNAME` | Database user                    | `postgres`                                  |
-| `DB_PASSWORD` | Database password                | `postgres`                                  |
-| `JWT_SECRET`  | Secret key for JWT signing       | `change-this-secret-in-production`          |
+| `DB_URL`      | URL de conexión JDBC             | `jdbc:postgresql://localhost:5432/postgres` |
+| `DB_USERNAME` | Usuario de la base de datos      | `postgres`                                  |
+| `DB_PASSWORD` | Contraseña de la base de datos   | `postgres`                                  |
+| `JWT_SECRET`  | Clave secreta para firma JWT     | `change-this-secret-in-production`          |
 
 > [!IMPORTANT]
-> Always change the `JWT_SECRET` and database credentials before deploying to a production environment.
+> Cambia siempre el `JWT_SECRET` y las credenciales de la base de datos antes de desplegar en un entorno de producción.
 
 ---
 
-## 🔌 API Endpoints
+## 🔌 Endpoints de la API
 
-- **Health:** `GET /health` -> Returns `{"status": "UP"}`
-- **Auth:** `POST /auth/login` -> Returns a JWT token.
-- **Secure:** `GET /secure` -> (Requires JWT) Greets the authenticated user.
-- **AI Chat:** `POST /ai/chat` -> (Requires JWT) Interface with the AI agent.
+- **Health:** `GET /health` -> Retorna `{"status": "UP"}`
+- **Auth:** `POST /auth/login` -> Retorna un token JWT.
+- **Secure:** `GET /secure` -> (Requiere JWT) Saluda al usuario autenticado.
+- **AI Chat:** `POST /ai/chat` -> (Requiere JWT) Interfaz con el agente de IA.
 
 ---
 
-## 🚢 Deployment
+## 🚢 Despliegue
 
 ### Kubernetes
 
-1. Update values in `k8s/config-system.yaml`.
-2. Apply the configuration:
+1. Actualiza los valores en `k8s/config-system.yaml`.
+2. Aplica la configuración:
    ```bash
    kubectl apply -f k8s/
    ```
 
 ---
 
-## 🤝 Contributing
+## 🤝 Contribuir
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+¡Las contribuciones son bienvenidas! Siéntete libre de enviar un Pull Request.
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+1. Haz un Fork del proyecto.
+2. Crea tu rama de características (`git checkout -b feature/NuevaCaracteristica`).
+3. Realiza tus cambios (`git commit -m 'Añadir NuevaCaracteristica'`).
+4. Sube los cambios a tu rama (`git push origin feature/NuevaCaracteristica`).
+5. Abre un Pull Request.
 
 ---
 
-## 📄 License
+## 📄 Licencia
 
-Distributed under the **MIT License**. See `LICENSE` for more information.
+Distribuido bajo la **Licencia MIT**. Consulta `LICENSE` para más información.
 
 ---
 
 <p align="center">
-  Made with ❤️ by <a href="https://github.com/detivenc">Nicolas Cao</a>
+  Hecho con ❤️ por <a href="https://github.com/detivenc">Nicolas Cao</a>
 </p>
