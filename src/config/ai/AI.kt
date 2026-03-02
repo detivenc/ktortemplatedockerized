@@ -1,4 +1,4 @@
-package plugins
+package config.ai
 
 import ai.koog.agents.core.agent.AIAgent
 import ai.koog.prompt.executor.clients.openai.OpenAIClientSettings

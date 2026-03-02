@@ -25,5 +25,6 @@ settings:
   kotlin:
     serialization:
       enabled: true
+      version: 1.10.0
   jvm:
     mainClass: io.ktor.server.netty.EngineMain

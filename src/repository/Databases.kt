@@ -1,6 +1,7 @@
-package plugins
+package repository
 
-import Users
+import model.Users
+import model.Posts
 import io.ktor.server.application.*
 import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.SchemaUtils
@@ -43,6 +44,6 @@ fun Application.configureDatabase() {
     }
 
     transaction(db) {
-        SchemaUtils.create(Users)
+        SchemaUtils.create(Users, Posts)
     }
 }

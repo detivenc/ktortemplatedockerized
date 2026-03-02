@@ -1,10 +1,10 @@
 import io.ktor.server.application.*
 import io.ktor.server.netty.EngineMain
-import plugins.configureAI
-import plugins.configureDatabase
-import plugins.configureRouting
-import plugins.configureSecurity
-import plugins.configureSerialization
+import config.ai.configureAI
+import repository.configureDatabase
+import routing.configureRouting
+import config.security.configureSecurity
+import config.serialization.configureSerialization
 
 fun main(args: Array<String>) {
     EngineMain.main(args)
