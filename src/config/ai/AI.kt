@@ -9,6 +9,7 @@ import ai.koog.prompt.llm.LLMProvider
 import ai.koog.prompt.llm.LLModel
 import io.ktor.server.application.*
 import io.ktor.util.*
+import kotlin.time.ExperimentalTime
 
 data class AIConfig(
     val model: String,
@@ -18,6 +19,7 @@ data class AIConfig(
 
 val AIConfigKey = AttributeKey<AIConfig>("AIConfig")
 
+@OptIn(ExperimentalTime::class)
 fun Application.configureAI() {
     val config = environment.config
 
