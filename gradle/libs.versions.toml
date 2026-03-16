@@ -1,7 +1,7 @@
 [versions]
 exposed = "1.1.1"
 koog = "0.6.4"
-kotlin = "2.3.10"
+kotlin = "2.3.20"
 ktor = "3.4.1"
 logback = "1.5.32"
 postgres = "42.7.10"
