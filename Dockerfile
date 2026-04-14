@@ -19,7 +19,7 @@ ENV AMPER_NO_WELCOME_BANNER=1
 RUN ./amper package
 
 # Production stage
-FROM eclipse-temurin:25.0.2_10-jre-alpine-3.22
+FROM eclipse-temurin:25.0.2_10-jre-alpine-3.21
 WORKDIR /app
 
 # Create non-root user
