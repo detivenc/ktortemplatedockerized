@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://skillicons.dev">
-    <img src="https://skillicons.dev/icons?i=githubactions,kubernetes,docker,kotlin,postgres,ktor&perline=7" />
+    <img src="https://skillicons.dev/icons?i=githubactions,kubernetes,helm,docker,kotlin,postgres,ktor&perline=7" />
   </a>
 </p>
 
@@ -29,7 +29,7 @@ El proyecto utiliza **Amper**, la herramienta de construcción simplificada de J
 
 - ⚡ **Ktor 3.4.0**: Framework web asíncrono de alto rendimiento para Kotlin.
 - 📦 **Docker & Compose**: Contenerización fluida y entorno de desarrollo local listo.
-- 🎡 **Kubernetes**: Manifiestos listos para producción, incluyendo límites de recursos y sondas de salud (health probes).
+- 🎡 **Helm**: Gestión de despliegues simplificada mediante charts de Helm para Kubernetes.
 - 🗄️ **Exposed 1.1.1**: Framework SQL de tipado seguro para Kotlin.
 - 🔐 **Seguridad JWT**: Endpoints protegidos mediante autenticación JWT.
 - 🤖 **Integración de IA**: Soporte integrado para agentes de IA utilizando la librería Koog.
@@ -42,7 +42,7 @@ El proyecto utiliza **Amper**, la herramienta de construcción simplificada de J
 ```text
 ├── .github/workflows   # Pipelines de CI/CD
 ├── gradle/             # Catálogo de versiones (libs.versions.toml)
-├── k8s/                # Manifiestos de Kubernetes
+├── ktortemplatedockerized-chart/ # Chart de Helm para despliegue
 ├── src/
 │   ├── Application.kt  # Punto de entrada de la aplicación
 │   └── plugins/        # Configuraciones de características de Ktor
@@ -112,13 +112,19 @@ La aplicación se configura a través de `resources/application.yaml` y variable
 ---
 
 ## 🚢 Despliegue
-
-### Kubernetes
-
-1. Actualiza los valores en `k8s/config-system.yaml`.
-2. Aplica la configuración:
+1. Construye la imagen de Docker:
    ```bash
-   kubectl apply -f k8s/
+   docker build -t ktor-app:latest .
+   ```
+
+2. Instala el Chart de Helm:
+   ```bash
+   helm install ktortemplatedockerized ./ktortemplatedockerized-chart
+   ```
+
+3. (Opcional) Actualiza el Chart:
+   ```bash
+   helm upgrade ktortemplatedockerized ./ktortemplatedockerized-chart
    ```
 
 ---

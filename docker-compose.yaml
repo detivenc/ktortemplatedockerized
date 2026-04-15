@@ -5,15 +5,15 @@ services:
       dockerfile: Dockerfile
     container_name: ktor_app
     environment:
-      DB_URL: <KEY>
-      DB_USERNAME: <KEY>
-      DB_PASSWORD: <KEY>
-      JWT_SECRET: <KEY>
+      DB_URL: jdbc:postgresql://ktor_db:5432/postgres
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      JWT_SECRET: change-this-secret-in-production
       JWT_ISSUER: ktor-app
       JWT_AUDIENCE: ktor-app-users
       LM_STUDIO_URL: http://host.docker.internal:1234
       LM_STUDIO_API_KEY: lm-studio
-      LM_STUDIO_MODEL: <KEY>
+      LM_STUDIO_MODEL: default-model
     ports:
       - "8080:8080"
     depends_on:
@@ -28,9 +28,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: <KEY>
-      POSTGRES_PASSWORD: <KEY>
-      POSTGRES_DB: <KEY>
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
     volumes:
       - data:/var/lib/postgresql/data
     healthcheck:
