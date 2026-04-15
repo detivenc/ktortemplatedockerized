@@ -12,10 +12,10 @@ jwt:
   realm: "ktor sample app"
 
 database:
-  url: "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;MODE=PostgreSQL"
-  driver: "org.h2.Driver"
-  user: "sa"
-  password: ""
+  url: "jdbc:postgresql://localhost:5432/postgres"
+  driver: "org.postgresql.Driver"
+  user: "postgres"
+  password: "postgres"
 
 ai:
     lmstudio:

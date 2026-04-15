@@ -19,15 +19,15 @@ fun Application.configureDatabase() {
 
     val dbUser = config.propertyOrNull("database.user")?.getString()
         ?: System.getenv("DB_USERNAME")
-        ?: "sa"
+        ?: "postgres"
 
     val dbPassword = config.propertyOrNull("database.password")?.getString()
         ?: System.getenv("DB_PASSWORD")
-        ?: ""
+        ?: "postgres"
 
     val dbDriver = config.propertyOrNull("database.driver")?.getString()
         ?: System.getenv("DB_DRIVER")
-        ?: "org.h2.Driver"
+        ?: "org.postgresql.Driver"
 
     val db = try {
         Database.connect(

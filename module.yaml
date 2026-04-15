@@ -11,7 +11,7 @@ dependencies:
   - $libs.exposed.jdbc
   - $libs.h2
   - $libs.jbcrypt
-  #- $libs.postgresql
+  - $libs.postgresql
   - $libs.koog.ktor
   - $libs.ktor.server.netty
   - $libs.logback.classic
